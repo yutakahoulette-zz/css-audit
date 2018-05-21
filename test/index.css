@@ -1,0 +1,57 @@
+/* single line comment */
+
+.b,
+.a {
+  margin: 0 0 1rem 0;
+  color: red;
+}
+
+/* 
+multiline
+comment
+*/
+
+.c,
+.d {
+  background: blue; /* blah */
+  padding: 1rem;
+}
+
+@media (max-width: 800px) {
+  .c {
+    display: none;
+    background: red;
+  }
+}
+
+@media (max-width: 500px) {
+  .a {
+    color: red;
+  }
+  .b {
+    background: green;
+  }
+}
+
+@media (max-width: 400px) { .d { display: none; } }
+
+.a {
+  font-size: 2rem;
+}
+
+.c,
+.d {
+  width: 1px;
+}
+
+@media (max-width: 500px) {
+  .d {
+    left: 0;
+    display: none;
+  }
+  .f {
+    left: 0;
+    padding: 1rem;
+  }
+}
+
