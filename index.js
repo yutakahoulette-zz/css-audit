@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs')
 const commander = require('commander')
+const getCss = require('get-css')
 const reg = require('./utils/regexes')
 const cleanSplit = require('./utils/cleanSplit')
 const cleanReplace = require('./utils/cleanReplace')
@@ -74,27 +75,31 @@ const countMediaRules = (css) => {
 const writeData = json => {
   fs.writeFile(WRITE_PATH, json, ENCODING, (err) => {
     if (err) throw err
-    console.log(`Written to ${WRITE_PATH}!`)
+    console.log(`Written to ${WRITE_PATH}`)
   })
 }
 
-const parseCss = path => {
-  console.log(`Reading ${path}...`)
-  fs.readFile(path, ENCODING, (err, css) => {
-    if (err) throw err
-    console.log('Parsing...')
-    const cleanCss = cleanReplace(cleanReplace(css, reg.comments, ''), reg.fontface, '')
-    const cleanNoMediaCss = cleanReplace(cleanCss, reg.mediaBlocks, '')
-    const rulesCount = [].concat(
-      countRules(cleanNoMediaCss),
-      countMediaRules(cleanCss)
-    )
-    writeData(JSON.stringify(rulesCount))
-  })
+const parseCss = url => {
+  console.log(`Getting css from ${url}`)
+  getCss(url)
+    .then((resp) => {
+      const css = resp.css
+      console.log('Parsing')
+      const cleanCss = cleanReplace(cleanReplace(css, reg.comments, ''), reg.fontface, '')
+      const cleanNoMediaCss = cleanReplace(cleanCss, reg.mediaBlocks, '')
+      const rulesCount = [].concat(
+        countRules(cleanNoMediaCss),
+        countMediaRules(cleanCss)
+      )
+      writeData(JSON.stringify(rulesCount))
+    })
+    .catch(err => {
+      throw err
+    })
 }
 
 commander
-  .arguments('<path>')
+  .arguments('<url>')
   .action(parseCss)
   .parse(process.argv)
 

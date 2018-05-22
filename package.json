@@ -7,8 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run test",
-    "demo": "budo dir demo/ --live -- -t babelify"
+    "test": "npm run test"
   },
   "keywords": [
     "css"
@@ -19,10 +18,8 @@
     "audit-css-declarations": "./index.js"
   },
   "dependencies": {
-    "babel-preset-es2015": "^6.24.1",
-    "babelify": "^8.0.0",
-    "budo": "^11.2.2",
-    "commander": "^2.15.1"
+    "commander": "^2.15.1",
+    "get-css": "^1.2.7-2"
   },
   "devDependencies": {
     "tap-spec": "^4.1.1",
