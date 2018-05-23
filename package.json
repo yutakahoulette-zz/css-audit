@@ -7,21 +7,23 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run test"
+    "test": "npm run test",
+    "start": "budo index.js --live --cors --open -- -t babelify"
   },
   "keywords": [
     "css"
   ],
   "author": "Yutaka Houlette <yutakahoulette@gmail.com>",
   "license": "MIT",
-  "bin": {
-    "audit-css-declarations": "./index.js"
-  },
   "dependencies": {
     "commander": "^2.15.1",
     "get-css": "^1.2.7-2"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babelify": "^8.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "budo": "^11.2.2",
     "tap-spec": "^4.1.1",
     "tape": "^4.9.0",
     "tape-run": "^4.0.0"

@@ -1,13 +1,7 @@
-#!/usr/bin/env node
-const fs = require('fs')
-const commander = require('commander')
 const getCss = require('get-css')
 const reg = require('./utils/regexes')
 const cleanSplit = require('./utils/cleanSplit')
 const cleanReplace = require('./utils/cleanReplace')
-
-const ENCODING = 'utf8'
-const WRITE_PATH = 'demo/data.json'
 
 const sortByCount = obj => {
   const sortedKeys = Object.keys(obj).sort((a, b) => {
@@ -72,34 +66,48 @@ const countMediaRules = (css) => {
   }, {})
 }
 
-const writeData = json => {
-  fs.writeFile(WRITE_PATH, json, ENCODING, (err) => {
-    if (err) throw err
-    console.log(`Written to ${WRITE_PATH}`)
-  })
+const stats = data => {
+  return data.map(d => `
+    <div class='box'>
+      <h2>${d.rule}</h2>
+      <h3>${d.count}</h3>
+      <div>
+        ${d.selectors.map(s => `<span class='pill'>${s}</span>`).join('')}
+      </div>
+    </div>
+  `).join('')
+}
+
+const renderData = obj => {
+  const noMediaView = stats(obj.noMedia)
+  resultsElm.innerHTML = noMediaView
 }
 
 const parseCss = url => {
-  console.log(`Getting css from ${url}`)
   getCss(url)
     .then((resp) => {
       const css = resp.css
-      console.log('Parsing')
       const cleanCss = cleanReplace(cleanReplace(css, reg.comments, ''), reg.fontface, '')
       const cleanNoMediaCss = cleanReplace(cleanCss, reg.mediaBlocks, '')
-      const rulesCount = [].concat(
-        countRules(cleanNoMediaCss),
-        countMediaRules(cleanCss)
-      )
-      writeData(JSON.stringify(rulesCount))
+      const rulesCount = {
+        noMedia: countRules(cleanNoMediaCss),
+        media: countMediaRules(cleanCss)
+      }
+      renderData(rulesCount)
     })
     .catch(err => {
       throw err
     })
 }
 
-commander
-  .arguments('<url>')
-  .action(parseCss)
-  .parse(process.argv)
+const submit = ev => {
+  ev.preventDefault()
+  const url = ev.target.querySelector('input').value
+  parseCss(url)
+}
+
+const formElm = document.getElementById('form')
+const resultsElm = document.getElementById('results')
+
+formElm.addEventListener('submit', submit)
 
