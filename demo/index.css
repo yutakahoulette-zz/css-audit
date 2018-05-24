@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Helvetica,sans-serif;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.statsBox {
+  margin-top: 3rem;
+}
+
+.count {
+  color: tomato;
+  margin-right: .5rem;
+}
+
+.grey {
+  color: rgba(0,0,0,0.7);
+}
+
+.selectors {
+  padding-top: 1rem;
+}
+
+.pill {
+  font-size: 12px;
+  display: inline-block;
+  margin-top: .5rem;
+  margin-right: .5rem;
+  background: rgba(0,0,0,0.03);
+  padding: .25rem;
+}
+
+.hide {
+  display: none;
+}
+
+a {
+  text-decoration: underline;
+  cursor: pointer;
+}
+

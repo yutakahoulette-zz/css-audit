@@ -1,7 +1,16 @@
+#!/usr/bin/env node
+const fs = require('fs')
+const commander = require('commander')
+const normalizeUrl = require('normalize-url')
+const budo = require('budo')
+const babelify = require('babelify')
 const getCss = require('get-css')
 const reg = require('./utils/regexes')
 const cleanSplit = require('./utils/cleanSplit')
 const cleanReplace = require('./utils/cleanReplace')
+
+const ENCODING = 'utf8'
+const WRITE_PATH = 'demo/data.json'
 
 const sortByCount = obj => {
   const sortedKeys = Object.keys(obj).sort((a, b) => {
@@ -66,48 +75,56 @@ const countMediaRules = (css) => {
   }, {})
 }
 
-const stats = data => {
-  return data.map(d => `
-    <div class='box'>
-      <h2>${d.rule}</h2>
-      <h3>${d.count}</h3>
-      <div>
-        ${d.selectors.map(s => `<span class='pill'>${s}</span>`).join('')}
-      </div>
-    </div>
-  `).join('')
+const open = () => {
+  budo('./demo/index.js', {
+    live: true,
+    stream: process.stdout, 
+    open: true,
+    dir: './demo',
+    port: 8000,
+    browserify: {
+      transform: babelify 
+    }
+  })
 }
 
-const renderData = obj => {
-  const noMediaView = stats(obj.noMedia)
-  resultsElm.innerHTML = noMediaView
-}
+const writeData = json => {
+   fs.writeFile(WRITE_PATH, json, ENCODING, (err) => {
+     if (err) throw err
+     console.log(`Written to ${WRITE_PATH}`)
+     open()
+   })
+ }
 
 const parseCss = url => {
-  getCss(url)
+  if(!url) {
+    throw 'No URL given'
+  }
+  url = normalizeUrl(url, { stripWWW: false })
+  console.log(`Getting CSS files from ${url}`)
+  const options = {
+    verbose: true,
+    ignoreCerts: true
+  }
+  getCss(url, options)
     .then((resp) => {
+      console.log('Parsing CSS')
       const css = resp.css
       const cleanCss = cleanReplace(cleanReplace(css, reg.comments, ''), reg.fontface, '')
       const cleanNoMediaCss = cleanReplace(cleanCss, reg.mediaBlocks, '')
       const rulesCount = {
+        title: resp.pageTitle,
         noMedia: countRules(cleanNoMediaCss),
         media: countMediaRules(cleanCss)
       }
-      renderData(rulesCount)
+      writeData(JSON.stringify(rulesCount))
     })
     .catch(err => {
       throw err
     })
 }
-
-const submit = ev => {
-  ev.preventDefault()
-  const url = ev.target.querySelector('input').value
-  parseCss(url)
-}
-
-const formElm = document.getElementById('form')
-const resultsElm = document.getElementById('results')
-
-formElm.addEventListener('submit', submit)
+commander
+   .arguments('<url>')
+   .action(parseCss)
+   .parse(process.argv)
 

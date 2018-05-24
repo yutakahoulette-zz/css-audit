@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "npm run test",
-    "start": "budo index.js --live --cors --open -- -t babelify"
+    "start": "node index.js",
+    "open": "budo demo/index.js --dir demo/ --live --open -- -t babelify"
   },
   "keywords": [
     "css"
@@ -17,7 +18,8 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^2.15.1",
-    "get-css": "^1.2.7-2"
+    "get-css": "^1.2.7-2",
+    "normalize-url": "^2.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
